@@ -54,8 +54,8 @@
                         <a href="{% url 'tontineapp:detail_groupe' groupe.id %}" class="btn btn-primary btn-sm" style="flex: 2; justify-content: center;">
                             Détail du groupe &rarr;
                         </a>
-                        <a href="{% url 'tontineapp:modifier_groupe' groupe.id %}" class="btn btn-secondary btn-sm" title="Modifier">
-                            ✏️
+                        <a href="{% url 'tontineapp:modifier_groupe' groupe.id %}" class="btn btn-secondary btn-sm">
+                            Modifier
                         </a>
                     </div>
                 </div>
@@ -63,7 +63,6 @@
         </div>
     {% else %}
         <div class="empty-state">
-            <div class="empty-state-icon">👥</div>
             <h3>Aucun groupe de tontine pour le moment</h3>
             <p>Commencez par créer votre premier groupe d'épargne collective.</p>
             <a href="{% url 'tontineapp:creer_groupe' %}" class="btn btn-primary">+ Créer un groupe</a>

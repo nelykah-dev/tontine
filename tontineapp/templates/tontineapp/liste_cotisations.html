@@ -76,8 +76,8 @@
                                 {% endif %}
                             </td>
                             <td style="text-align: right;">
-                                <a href="{% url 'tontineapp:modifier_cotisation' c.id %}" class="btn btn-secondary btn-sm" title="Modifier">✏️</a>
-                                <a href="{% url 'tontineapp:supprimer_cotisation' c.id %}" class="btn btn-danger btn-sm" title="Supprimer">🗑️</a>
+                                <a href="{% url 'tontineapp:modifier_cotisation' c.id %}" class="btn btn-secondary btn-sm">Modifier</a>
+                                <a href="{% url 'tontineapp:supprimer_cotisation' c.id %}" class="btn btn-danger btn-sm">Supprimer</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -86,7 +86,6 @@
         </div>
     {% else %}
         <div class="empty-state">
-            <div class="empty-state-icon">💳</div>
             <h3>Aucune cotisation trouvée</h3>
             <p>Enregistrez un versement pour commencer à suivre la trésorerie de vos tontines.</p>
             <a href="{% url 'tontineapp:enregistrer_cotisation_globale' %}" class="btn btn-primary">+ Enregistrer un versement</a>

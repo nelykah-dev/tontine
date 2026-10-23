@@ -29,7 +29,7 @@
     {% if prochain_tour %}
         <div class="beneficiary-box">
             <div>
-                <div class="beneficiary-title">🎯 Prochain Bénéficiaire du Tour #{{ prochain_tour.ordre }}</div>
+                <div class="beneficiary-title">Prochain bénéficiaire du Tour #{{ prochain_tour.ordre }}</div>
                 <div class="beneficiary-info">
                     <strong>{{ prochain_tour.membership.membre }}</strong> recevra la somme de
                     <strong style="color: var(--primary);">{{ prochain_tour.get_montant_effectif }}</strong>
@@ -40,14 +40,14 @@
                 <a href="{% url 'tontineapp:changer_statut_tour' prochain_tour.id 'complete' %}"
                    class="btn btn-primary btn-sm"
                    onclick="return confirm('Confirmer la distribution de la cagnotte pour ce tour ?');">
-                    ✓ Valider le versement
+                    Valider le versement
                 </a>
             </div>
         </div>
     {% else %}
         <div class="beneficiary-box" style="background: #fbfbf8; border-color: #e5e5dc;">
             <div class="beneficiary-info">
-                ℹ️ Aucun tour de versement à venir.
+                Aucun tour de versement à venir.
                 <a href="{% url 'tontineapp:creer_tour' groupe.id %}" style="margin: 0; padding: 0; background: none; color: var(--primary); font-weight: 600; box-shadow: none;">
                     Programmer le prochain tour maintenant &rarr;
                 </a>
@@ -175,17 +175,17 @@
                                     <a href="{% url 'tontineapp:changer_statut_tour' tour.id 'complete' %}"
                                        class="btn btn-secondary btn-sm"
                                        title="Marquer comme versé">
-                                        ✓ Versé
+                                        Clôturer
                                     </a>
                                 {% else %}
                                     <a href="{% url 'tontineapp:changer_statut_tour' tour.id 'en_attente' %}"
                                        class="btn btn-secondary btn-sm"
                                        title="Remettre en attente">
-                                        ↺ Rouvrir
+                                        Rouvrir
                                     </a>
                                 {% endif %}
-                                <a href="{% url 'tontineapp:modifier_tour' tour.id %}" class="btn btn-secondary btn-sm" title="Modifier">✏️</a>
-                                <a href="{% url 'tontineapp:supprimer_tour' tour.id %}" class="btn btn-danger btn-sm" title="Supprimer">🗑️</a>
+                                <a href="{% url 'tontineapp:modifier_tour' tour.id %}" class="btn btn-secondary btn-sm">Modifier</a>
+                                <a href="{% url 'tontineapp:supprimer_tour' tour.id %}" class="btn btn-danger btn-sm">Supprimer</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -240,8 +240,8 @@
                                 {% endif %}
                             </td>
                             <td style="text-align: right;">
-                                <a href="{% url 'tontineapp:modifier_cotisation' c.id %}" class="btn btn-secondary btn-sm" title="Modifier">✏️</a>
-                                <a href="{% url 'tontineapp:supprimer_cotisation' c.id %}" class="btn btn-danger btn-sm" title="Supprimer">🗑️</a>
+                                <a href="{% url 'tontineapp:modifier_cotisation' c.id %}" class="btn btn-secondary btn-sm">Modifier</a>
+                                <a href="{% url 'tontineapp:supprimer_cotisation' c.id %}" class="btn btn-danger btn-sm">Supprimer</a>
                             </td>
                         </tr>
                     {% endfor %}

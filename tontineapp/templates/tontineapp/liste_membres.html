@@ -38,8 +38,8 @@
                             <td>{{ m.nb_groupes }} groupe{{ m.nb_groupes|pluralize }}</td>
                             <td><strong style="color: var(--primary);">{{ m.total_verse|default:"0.00" }}</strong></td>
                             <td style="text-align: right;">
-                                <a href="{% url 'tontineapp:modifier_membre' m.id %}" class="btn btn-secondary btn-sm" title="Modifier le membre">✏️ Modifier</a>
-                                <a href="{% url 'tontineapp:supprimer_membre' m.id %}" class="btn btn-danger btn-sm" title="Supprimer le membre">🗑️ Supprimer</a>
+                                <a href="{% url 'tontineapp:modifier_membre' m.id %}" class="btn btn-secondary btn-sm">Modifier</a>
+                                <a href="{% url 'tontineapp:supprimer_membre' m.id %}" class="btn btn-danger btn-sm">Supprimer</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -48,7 +48,6 @@
         </div>
     {% else %}
         <div class="empty-state">
-            <div class="empty-state-icon">👤</div>
             <h3>Aucun membre enregistré</h3>
             <p>Commencez par ajouter les membres qui rejoindront les tontines.</p>
             <a href="{% url 'tontineapp:creer_membre' %}" class="btn btn-primary">+ Ajouter un membre</a>
