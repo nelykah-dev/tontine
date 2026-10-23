@@ -140,3 +140,4 @@ python manage.py test
             ├── liste_cotisations.html
             └── confirmer_suppression.html
 ```
+
