@@ -1,0 +1,73 @@
+{% extends 'tontineapp/base.html' %}
+
+{% block title %}Groupes de Tontine{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header-flex">
+        <div>
+            <h1>Groupes de Tontine</h1>
+            <p>Découvrez tous les groupes d'épargne rotative et gérez leurs membres et cagnottes.</p>
+        </div>
+        <div>
+            <a href="{% url 'tontineapp:creer_groupe' %}" class="btn btn-primary">+ Créer un nouveau groupe</a>
+        </div>
+    </div>
+
+    {% if groupes %}
+        <div class="group-grid">
+            {% for groupe in groupes %}
+                <div class="group-card">
+                    <div class="group-card-header">
+                        <h2 class="group-card-title">{{ groupe.nomGroupe }}</h2>
+                        <span class="badge badge-warning">{{ groupe.get_frequenceCotisation_display }}</span>
+                    </div>
+                    <div class="group-card-body">
+                        <div class="group-meta-item">
+                            <span class="group-meta-label">Chef de groupe :</span>
+                            <span class="group-meta-val">
+                                {% if groupe.chefGroupe %}
+                                    {{ groupe.chefGroupe.user.get_full_name|default:groupe.chefGroupe.user.username }}
+                                {% else %}
+                                    <em style="color: #999;">Non désigné</em>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="group-meta-item">
+                            <span class="group-meta-label">Cotisation unitaire :</span>
+                            <span class="group-meta-val">{{ groupe.montantCotisation }}</span>
+                        </div>
+                        <div class="group-meta-item">
+                            <span class="group-meta-label">Membres inscrits :</span>
+                            <span class="group-meta-val">{{ groupe.nb_membres }}</span>
+                        </div>
+                        <div class="group-meta-item">
+                            <span class="group-meta-label">Cagnotte par tour :</span>
+                            <span class="group-meta-val" style="color: var(--primary);">{{ groupe.cagnotte_totale }}</span>
+                        </div>
+                        <div class="group-meta-item">
+                            <span class="group-meta-label">Date création :</span>
+                            <span class="group-meta-val">{{ groupe.dateCreation|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                    <div class="group-card-footer">
+                        <a href="{% url 'tontineapp:detail_groupe' groupe.id %}" class="btn btn-primary btn-sm" style="flex: 2; justify-content: center;">
+                            Détail du groupe &rarr;
+                        </a>
+                        <a href="{% url 'tontineapp:modifier_groupe' groupe.id %}" class="btn btn-secondary btn-sm" title="Modifier">
+                            ✏️
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">👥</div>
+            <h3>Aucun groupe de tontine pour le moment</h3>
+            <p>Commencez par créer votre premier groupe d'épargne collective.</p>
+            <a href="{% url 'tontineapp:creer_groupe' %}" class="btn btn-primary">+ Créer un groupe</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

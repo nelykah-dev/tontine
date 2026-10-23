@@ -1,0 +1,58 @@
+{% extends 'tontineapp/base.html' %}
+
+{% block title %}Membres - Tontine{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header-flex">
+        <div>
+            <h1>Gestion des Membres</h1>
+            <p>Retrouvez tous les membres inscrits sur la plateforme et leurs informations de contact.</p>
+        </div>
+        <div>
+            <a href="{% url 'tontineapp:creer_membre' %}" class="btn btn-primary">+ Ajouter un membre</a>
+        </div>
+    </div>
+
+    {% if membres %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Identifiant</th>
+                        <th>Nom Complet</th>
+                        <th>Email</th>
+                        <th>Téléphone / Contact</th>
+                        <th>Groupes actifs</th>
+                        <th>Cotisations versées</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in membres %}
+                        <tr>
+                            <td><strong>@{{ m.user.username }}</strong></td>
+                            <td>{{ m.user.get_full_name|default:"—" }}</td>
+                            <td>{{ m.user.email|default:"—" }}</td>
+                            <td><strong>{{ m.contact }}</strong></td>
+                            <td>{{ m.nb_groupes }} groupe{{ m.nb_groupes|pluralize }}</td>
+                            <td><strong style="color: var(--primary);">{{ m.total_verse|default:"0.00" }}</strong></td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'tontineapp:modifier_membre' m.id %}" class="btn btn-secondary btn-sm" title="Modifier le membre">✏️ Modifier</a>
+                                <a href="{% url 'tontineapp:supprimer_membre' m.id %}" class="btn btn-danger btn-sm" title="Supprimer le membre">🗑️ Supprimer</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">👤</div>
+            <h3>Aucun membre enregistré</h3>
+            <p>Commencez par ajouter les membres qui rejoindront les tontines.</p>
+            <a href="{% url 'tontineapp:creer_membre' %}" class="btn btn-primary">+ Ajouter un membre</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

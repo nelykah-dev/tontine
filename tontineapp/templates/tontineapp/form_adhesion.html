@@ -1,0 +1,44 @@
+{% extends 'tontineapp/base.html' %}
+
+{% block title %}Ajouter un membre à {{ groupe.nomGroupe }} - Tontine{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 650px; margin: 0 auto;">
+    <h1>Inscrire un membre</h1>
+    <p>Sélectionnez un membre enregistré pour l'ajouter au groupe <strong>{{ groupe.nomGroupe }}</strong>.</p>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% for field in form %}
+            {% if field.is_hidden %}
+                {{ field }}
+            {% else %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <div style="margin: 20px 0; padding: 15px; background: var(--primary-soft); border-radius: 10px;">
+            <p style="margin-bottom: 0; font-size: 0.9rem; color: var(--primary-dark);">
+                💡 <em>Le membre ne figure pas dans la liste ?</em>
+                <a href="{% url 'tontineapp:creer_membre' %}" style="margin: 0; padding: 0; background: none; color: var(--primary); font-weight: 600; box-shadow: none;">
+                    Créez d'abord son profil ici.
+                </a>
+            </p>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Valider l'adhésion</button>
+            <a href="{% url 'tontineapp:detail_groupe' groupe.id %}" class="btn btn-secondary">Retour au groupe</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

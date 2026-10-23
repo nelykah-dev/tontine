@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tontine - Gestionnaire d'Épargne Collective{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tontineapp/style.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'tontineapp:index' %}" class="brand-logo">
+                <span>🌱</span> Tontine
+            </a>
+            <nav class="nav-links">
+                <a href="{% url 'tontineapp:index' %}">Accueil</a>
+                <a href="{% url 'tontineapp:liste_groupes' %}">Groupes</a>
+                <a href="{% url 'tontineapp:liste_membres' %}">Membres</a>
+                <a href="{% url 'tontineapp:liste_cotisations' %}">Cotisations</a>
+                <a href="{% url 'tontineapp:creer_groupe' %}" class="btn-nav-action">+ Nouveau Groupe</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-wrapper">
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }}">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {% now "Y" %} Tontine - Gestionnaire d'épargne solidaire et rotative. Développé avec Django.</p>
+    </footer>
+</body>
+</html>

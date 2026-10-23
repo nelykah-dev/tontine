@@ -1,0 +1,255 @@
+{% extends 'tontineapp/base.html' %}
+
+{% block title %}{{ groupe.nomGroupe }} - Tontine{% endblock %}
+
+{% block content %}
+<!-- En-tête du groupe -->
+<div class="card">
+    <div class="card-header-flex">
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <h1>{{ groupe.nomGroupe }}</h1>
+                <span class="badge badge-warning">{{ groupe.get_frequenceCotisation_display }}</span>
+            </div>
+            <p>
+                Chef de groupe : <strong>{{ groupe.chefGroupe|default:"Non assigné" }}</strong>
+                &bull; Créé le : <strong>{{ groupe.dateCreation|date:"d F Y" }}</strong>
+            </p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{% url 'tontineapp:ajouter_membre_groupe' groupe.id %}" class="btn btn-primary btn-sm">+ Adhérer un membre</a>
+            <a href="{% url 'tontineapp:creer_tour' groupe.id %}" class="btn btn-primary btn-sm">+ Programmer un tour</a>
+            <a href="{% url 'tontineapp:enregistrer_cotisation' groupe.id %}" class="btn btn-primary btn-sm">+ Enregistrer cotisation</a>
+            <a href="{% url 'tontineapp:modifier_groupe' groupe.id %}" class="btn btn-secondary btn-sm" title="Modifier le groupe">Modifier</a>
+            <a href="{% url 'tontineapp:supprimer_groupe' groupe.id %}" class="btn btn-danger btn-sm" title="Supprimer le groupe">Supprimer</a>
+        </div>
+    </div>
+
+    <!-- Bannière Prochain Bénéficiaire -->
+    {% if prochain_tour %}
+        <div class="beneficiary-box">
+            <div>
+                <div class="beneficiary-title">🎯 Prochain Bénéficiaire du Tour #{{ prochain_tour.ordre }}</div>
+                <div class="beneficiary-info">
+                    <strong>{{ prochain_tour.membership.membre }}</strong> recevra la somme de
+                    <strong style="color: var(--primary);">{{ prochain_tour.get_montant_effectif }}</strong>
+                    le <strong>{{ prochain_tour.datePrevue|date:"d/m/Y" }}</strong>.
+                </div>
+            </div>
+            <div>
+                <a href="{% url 'tontineapp:changer_statut_tour' prochain_tour.id 'complete' %}"
+                   class="btn btn-primary btn-sm"
+                   onclick="return confirm('Confirmer la distribution de la cagnotte pour ce tour ?');">
+                    ✓ Valider le versement
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="beneficiary-box" style="background: #fbfbf8; border-color: #e5e5dc;">
+            <div class="beneficiary-info">
+                ℹ️ Aucun tour de versement à venir.
+                <a href="{% url 'tontineapp:creer_tour' groupe.id %}" style="margin: 0; padding: 0; background: none; color: var(--primary); font-weight: 600; box-shadow: none;">
+                    Programmer le prochain tour maintenant &rarr;
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Métriques clés -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-label">Cotisation unitaire</span>
+            <span class="stat-value">{{ groupe.montantCotisation }}</span>
+            <span class="stat-desc">par membre à chaque tour</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Cagnotte par tour</span>
+            <span class="stat-value">{{ groupe.cagnotte_totale }}</span>
+            <span class="stat-desc">{{ groupe.total_membres }} membre{{ groupe.total_membres|pluralize }} inscrit{{ groupe.total_membres|pluralize }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Cotisations perçues</span>
+            <span class="stat-value">{{ total_confirme|floatformat:2 }}</span>
+            <span class="stat-desc">montant total validé</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">Cotisations en retard</span>
+            <span class="stat-value" style="color: var(--danger);">{{ total_retards }}</span>
+            <span class="stat-desc">{{ total_attente }} en attente</span>
+        </div>
+    </div>
+</div>
+
+<!-- Section Membres et Adhésions -->
+<div class="card">
+    <div class="card-header-flex">
+        <h2>Membres du groupe ({{ memberships.count }})</h2>
+        <a href="{% url 'tontineapp:ajouter_membre_groupe' groupe.id %}" class="btn btn-primary btn-sm">+ Ajouter un membre</a>
+    </div>
+
+    {% if memberships %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Membre</th>
+                        <th>Contact / Téléphone</th>
+                        <th>Date d'adhésion</th>
+                        <th>Total Cotisé</th>
+                        <th>Retards</th>
+                        <th style="text-align: right;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in memberships %}
+                        <tr>
+                            <td>
+                                <strong>{{ m.membre.user.get_full_name|default:m.membre.user.username }}</strong>
+                                {% if m.membre == groupe.chefGroupe %}
+                                    <span class="badge badge-warning" style="margin-left: 6px;">Chef</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ m.membre.contact }}</td>
+                            <td>{{ m.dateAdhesion|date:"d/m/Y" }}</td>
+                            <td><strong style="color: var(--primary);">{{ m.total_cotise|default:"0.00" }}</strong></td>
+                            <td>
+                                {% if m.nb_retards > 0 %}
+                                    <span class="badge badge-danger">{{ m.nb_retards }} retard{{ m.nb_retards|pluralize }}</span>
+                                {% else %}
+                                    <span class="badge badge-success">À jour</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'tontineapp:retirer_membre_groupe' groupe.id m.id %}"
+                                   class="btn btn-danger btn-sm"
+                                   title="Retirer ce membre du groupe">
+                                    Retirer
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Aucun membre inscrit dans ce groupe pour l'instant.</p>
+    {% endif %}
+</div>
+
+<!-- Section Tours de Versement -->
+<div class="card">
+    <div class="card-header-flex">
+        <h2>Tours de Versement (Cagnottes)</h2>
+        <a href="{% url 'tontineapp:creer_tour' groupe.id %}" class="btn btn-primary btn-sm">+ Programmer un tour</a>
+    </div>
+
+    {% if tours %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ordre</th>
+                        <th>Bénéficiaire (Qui reçoit)</th>
+                        <th>Date prévue (Quand)</th>
+                        <th>Montant à percevoir</th>
+                        <th>État</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tour in tours %}
+                        <tr>
+                            <td><strong>Tour #{{ tour.ordre }}</strong></td>
+                            <td>{{ tour.membership.membre }}</td>
+                            <td>{{ tour.datePrevue|date:"d/m/Y" }}</td>
+                            <td><strong>{{ tour.get_montant_effectif }}</strong></td>
+                            <td>
+                                {% if tour.statut == 'complete' %}
+                                    <span class="badge badge-success">Complété</span>
+                                {% else %}
+                                    <span class="badge badge-warning">En attente</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                {% if tour.statut == 'en_attente' %}
+                                    <a href="{% url 'tontineapp:changer_statut_tour' tour.id 'complete' %}"
+                                       class="btn btn-secondary btn-sm"
+                                       title="Marquer comme versé">
+                                        ✓ Versé
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'tontineapp:changer_statut_tour' tour.id 'en_attente' %}"
+                                       class="btn btn-secondary btn-sm"
+                                       title="Remettre en attente">
+                                        ↺ Rouvrir
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'tontineapp:modifier_tour' tour.id %}" class="btn btn-secondary btn-sm" title="Modifier">✏️</a>
+                                <a href="{% url 'tontineapp:supprimer_tour' tour.id %}" class="btn btn-danger btn-sm" title="Supprimer">🗑️</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Aucun tour de versement programmé. Programmez l'ordre de passage pour distribuer la cagnotte.</p>
+    {% endif %}
+</div>
+
+<!-- Section Cotisations Récentes du Groupe -->
+<div class="card">
+    <div class="card-header-flex">
+        <h2>Suivi des cotisations</h2>
+        <a href="{% url 'tontineapp:enregistrer_cotisation' groupe.id %}" class="btn btn-primary btn-sm">+ Enregistrer une cotisation</a>
+    </div>
+
+    {% if cotisations %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Membre</th>
+                        <th>Tour associé</th>
+                        <th>Montant</th>
+                        <th>Date de versement</th>
+                        <th>Statut</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in cotisations %}
+                        <tr>
+                            <td><strong>{{ c.membership.membre }}</strong></td>
+                            <td>
+                                {% if c.tour %}
+                                    Tour #{{ c.tour.ordre }} ({{ c.tour.membership.membre.user.username }})
+                                {% else %}
+                                    <em>Général</em>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ c.montant }}</strong></td>
+                            <td>{{ c.datePaiement|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if c.statut == 'confirme' %}
+                                    <span class="badge badge-success">Confirmé</span>
+                                {% elif c.statut == 'en_retard' %}
+                                    <span class="badge badge-danger">En retard</span>
+                                {% else %}
+                                    <span class="badge badge-warning">En attente</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'tontineapp:modifier_cotisation' c.id %}" class="btn btn-secondary btn-sm" title="Modifier">✏️</a>
+                                <a href="{% url 'tontineapp:supprimer_cotisation' c.id %}" class="btn btn-danger btn-sm" title="Supprimer">🗑️</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Aucune cotisation enregistrée pour ce groupe pour l'instant.</p>
+    {% endif %}
+</div>
+{% endblock %}

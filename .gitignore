@@ -1,0 +1,32 @@
+# Environnements virtuels
+venv/
+env/
+ENV/
+.venv/
+
+# Base de données SQLite locale
+db.sqlite3
+db.sqlite3-journal
+
+# Fichiers compilés Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Variables d'environnement
+.env
+.env.*
+
+# IDEs et éditeurs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Fichiers de log
+*.log
+
+# Fichiers de build / distribution
+dist/
+build/
+*.egg-info/

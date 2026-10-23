@@ -1,0 +1,26 @@
+{% extends 'tontineapp/base.html' %}
+
+{% block title %}Confirmer la suppression - Tontine{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 40px auto; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 15px;">⚠️</div>
+    <h1 style="color: var(--danger);">Confirmation de suppression</h1>
+    <p style="font-size: 1.05rem; margin: 20px 0;">
+        Êtes-vous certain de vouloir supprimer {{ type_objet }} :
+        <br>
+        <strong style="color: var(--text-main); font-size: 1.15rem;">« {{ objet }} »</strong> ?
+    </p>
+    <p style="font-size: 0.9rem; color: var(--danger);">
+        Cette action est irréversible et supprimera également les données associées.
+    </p>
+
+    <form method="post" style="margin-top: 30px;">
+        {% csrf_token %}
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button type="submit" class="btn btn-danger">Oui, confirmer la suppression</button>
+            <a href="{{ url_retour }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

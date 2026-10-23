@@ -1,0 +1,81 @@
+{% extends 'tontineapp/base.html' %}
+
+{% block title %}Accueil - Tontine{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="max-width: 800px;">
+        <h1>Gestionnaire de Tontine</h1>
+        <p style="font-size: 1.15rem; color: #4a4540; margin-bottom: 20px;">
+            La solution moderne, simple et transparente pour organiser vos tontines d'épargne collective rotative.
+        </p>
+        <p>
+            Une tontine permet à un groupe de personnes de cotiser périodiquement une somme fixe. À chaque tour, l'un des participants reçoit l'intégralité de la cagnotte collectée.
+        </p>
+        <div style="display: flex; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+            <a href="{% url 'tontineapp:liste_groupes' %}" class="btn btn-primary">Explorer les groupes</a>
+            <a href="{% url 'tontineapp:creer_groupe' %}" class="btn btn-secondary">+ Créer un groupe</a>
+            <a href="{% url 'tontineapp:creer_membre' %}" class="btn btn-secondary">+ Nouveau membre</a>
+        </div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-label">Groupes Actifs</span>
+        <span class="stat-value">{{ total_groupes }}</span>
+        <span class="stat-desc">communautés d'épargne</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Membres Enregistrés</span>
+        <span class="stat-value">{{ total_membres }}</span>
+        <span class="stat-desc">épargnants inscrits</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Tours en attente</span>
+        <span class="stat-value">{{ tours_actifs }}</span>
+        <span class="stat-desc">prochains versements</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Fonds Sécurisés</span>
+        <span class="stat-value">{{ total_cotise|floatformat:2 }}</span>
+        <span class="stat-desc">montant total cotisé validé</span>
+    </div>
+</div>
+
+{% if groupes_recents %}
+<div class="card">
+    <div class="card-header-flex">
+        <h2>Groupes récemment créés</h2>
+        <a href="{% url 'tontineapp:liste_groupes' %}" class="btn btn-secondary btn-sm">Voir tous les groupes &rarr;</a>
+    </div>
+    <div class="group-grid">
+        {% for groupe in groupes_recents %}
+            <div class="group-card">
+                <div class="group-card-header">
+                    <h3 class="group-card-title">{{ groupe.nomGroupe }}</h3>
+                    <p style="font-size: 0.85rem; margin-bottom: 0;">Période : {{ groupe.get_frequenceCotisation_display }}</p>
+                </div>
+                <div class="group-card-body">
+                    <div class="group-meta-item">
+                        <span class="group-meta-label">Cotisation :</span>
+                        <span class="group-meta-val">{{ groupe.montantCotisation }}</span>
+                    </div>
+                    <div class="group-meta-item">
+                        <span class="group-meta-label">Membres :</span>
+                        <span class="group-meta-val">{{ groupe.total_membres }} membre{{ groupe.total_membres|pluralize }}</span>
+                    </div>
+                    <div class="group-meta-item">
+                        <span class="group-meta-label">Cagnotte par tour :</span>
+                        <span class="group-meta-val">{{ groupe.cagnotte_totale }}</span>
+                    </div>
+                </div>
+                <div class="group-card-footer">
+                    <a href="{% url 'tontineapp:detail_groupe' groupe.id %}" class="btn btn-primary btn-sm" style="width: 100%; justify-content: center;">Accéder au groupe</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

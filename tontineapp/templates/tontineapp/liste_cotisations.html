@@ -1,0 +1,96 @@
+{% extends 'tontineapp/base.html' %}
+
+{% block title %}Grand Livre des Cotisations - Tontine{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header-flex">
+        <div>
+            <h1>Journal des Cotisations</h1>
+            <p>Historique global de tous les versements effectués ou en attente.</p>
+        </div>
+        <div>
+            <a href="{% url 'tontineapp:enregistrer_cotisation_globale' %}" class="btn btn-primary">+ Enregistrer un versement</a>
+        </div>
+    </div>
+
+    <!-- Filtres rapides -->
+    <div style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
+        <a href="{% url 'tontineapp:liste_cotisations' %}"
+           class="btn btn-sm {% if not statut_actif %}btn-primary{% else %}btn-secondary{% endif %}">
+            Tous les statuts
+        </a>
+        <a href="{% url 'tontineapp:liste_cotisations' %}?statut=confirme"
+           class="btn btn-sm {% if statut_actif == 'confirme' %}btn-primary{% else %}btn-secondary{% endif %}">
+            Confirmés
+        </a>
+        <a href="{% url 'tontineapp:liste_cotisations' %}?statut=en_attente"
+           class="btn btn-sm {% if statut_actif == 'en_attente' %}btn-primary{% else %}btn-secondary{% endif %}">
+            En attente
+        </a>
+        <a href="{% url 'tontineapp:liste_cotisations' %}?statut=en_retard"
+           class="btn btn-sm {% if statut_actif == 'en_retard' %}btn-primary{% else %}btn-secondary{% endif %}">
+            En retard
+        </a>
+    </div>
+
+    {% if cotisations %}
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Membre</th>
+                        <th>Groupe</th>
+                        <th>Tour associé</th>
+                        <th>Montant</th>
+                        <th>Statut</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in cotisations %}
+                        <tr>
+                            <td>{{ c.datePaiement|date:"d/m/Y" }}</td>
+                            <td><strong>{{ c.membership.membre }}</strong></td>
+                            <td>
+                                <a href="{% url 'tontineapp:detail_groupe' c.membership.groupe.id %}" style="margin: 0; padding: 0; background: none; color: var(--primary); font-weight: 600; box-shadow: none;">
+                                    {{ c.membership.groupe.nomGroupe }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if c.tour %}
+                                    Tour #{{ c.tour.ordre }} ({{ c.tour.membership.membre.user.username }})
+                                {% else %}
+                                    <em>Non assigné</em>
+                                {% endif %}
+                            </td>
+                            <td><strong style="color: var(--primary);">{{ c.montant }}</strong></td>
+                            <td>
+                                {% if c.statut == 'confirme' %}
+                                    <span class="badge badge-success">Confirmé</span>
+                                {% elif c.statut == 'en_retard' %}
+                                    <span class="badge badge-danger">En retard</span>
+                                {% else %}
+                                    <span class="badge badge-warning">En attente</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align: right;">
+                                <a href="{% url 'tontineapp:modifier_cotisation' c.id %}" class="btn btn-secondary btn-sm" title="Modifier">✏️</a>
+                                <a href="{% url 'tontineapp:supprimer_cotisation' c.id %}" class="btn btn-danger btn-sm" title="Supprimer">🗑️</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">💳</div>
+            <h3>Aucune cotisation trouvée</h3>
+            <p>Enregistrez un versement pour commencer à suivre la trésorerie de vos tontines.</p>
+            <a href="{% url 'tontineapp:enregistrer_cotisation_globale' %}" class="btn btn-primary">+ Enregistrer un versement</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
